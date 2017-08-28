@@ -26,11 +26,8 @@ using namespace std;
 #define DQB1 7
 
 
-// ./js --prefix /home/mc/HLA-check/files/ HLA hlafile imputefile  ?
-string prefix;  // = "/home/mc/HLA-check/files/";
+string prefix;  
 string alnfile = "info.txt";
-
-//string prefix = "/home/mc/bin/files/";
 
 
 
@@ -170,7 +167,6 @@ int main(int argc, char** argv) {
             if(!(rslist >> a))goto endlecture;
             x[i]=a;
         }
-            //printf("%s\n",x[0].c_str());//DEBUG
         if(nm_name!=x[4])continue;
         int rspos_nm = stoi(x[7]);
         int rspos_f =0;
@@ -191,7 +187,6 @@ int main(int argc, char** argv) {
         }
         int refpos_nuc2=0;
         for(int i=0;; i++) {
-          //printf("%d %d %s\n",i,rspos_nuc,reftruc.c_str());//DEBUG
             if(refnuc[i]=='A' || refnuc[i]=='T' || refnuc[i]=='G' || refnuc[i]=='C' ) {
                 rspos_nuc--;
                 if(rspos_nuc<0) {
@@ -200,7 +195,6 @@ int main(int argc, char** argv) {
                 }
             }
         }
-        //printf("%s ok\n",x[0].c_str());//DEBUG
         rslist_nuc[x[0]]=refpos_nuc2;
     }
 endlecture:
@@ -222,10 +216,6 @@ endlecture:
             stringstream x(line);
             x>>a;
             x>>rs;
-    //printf("1111 %s\n",rs.c_str());DEBUG
-            //x>>a;
-            //x>>a;
-            //x>>a;
             x>>a;
             x>>allele1;
             x>>allele2;
@@ -241,9 +231,6 @@ endlecture:
                 x.str(oldlines[0]);
                 x>>a;
                 x>>cur_rs;
-                //x>>a;
-                //x>>a;
-                //x>>a;
                 x>>a;
                 x>>a1;
                 x>>a2;
@@ -261,17 +248,11 @@ endlecture:
                 y.str(oldlines[1]);
                 x>>a;
                 x>>cur_rs;
-                //x>>a;
-                //x>>a;
-                //x>>a;
                 x>>a;
                 x>>a1;
                 x>>a2;
                 y>>a;
                 y>>cur_rs;
-                //y>>a;
-                //y>>a;
-                //y>>a;
                 y>>a;
                 y>>a3;
                 y>>a4;
@@ -472,7 +453,6 @@ scoring:
                 //la fonction doit être NÉGATIVE et DÉCROISSANTE SUR [0,1] :
                 //1 = "pas bon du tout"; 0 = "perfect match"
             }
-              //printf("%s %s %f\n",hla1.c_str(),hla2.c_str(),scoretot);DEBUG?
             if(scoretot > *scoremin) {
                 (*scoremin)=scoretot;
                 hla1min=hla1;
