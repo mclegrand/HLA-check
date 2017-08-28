@@ -74,10 +74,11 @@ inline char invert(char in) {
 
 
 int main(int argc, char** argv) {
-    if(argc<5) {
-        printf("%s A impute2_file hla_file ~/HLA-check/files/\n", argv[0]);
+    if(argc<4) {
+        printf("%s A impute2_file hla_file [files/]\n", argv[0]);
         return 1;
     }
+    if(argc<5) prefix="files/"; else prefix = argv[4];
 
     int chosen_hla = -1;
     if(!strcmp(argv[1],"A"))chosen_hla=A;
@@ -92,7 +93,6 @@ int main(int argc, char** argv) {
         printf("HLA must be A,B,C,DRB1,DPA1,DPB1,DQA1, or DQB1\n");
         return 1;
     }
-    prefix = argv[4];
 
     ifstream aln_file;
     aln_file.open(prefix + alnfile);

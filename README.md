@@ -13,13 +13,13 @@ The code only depends on OpenMP:
 
 ##Usage
 
-`./hla-check <HLA> <imputed_file> <hla_file> <files/ path>`
+`./hla-check <HLA> <imputed_file> <hla_file> [<files/ path>]`
 
 Where:
 * HLA is one in A, B, C, DRB1, DPA1, DPB1, DQA1, DQB1.
 * imputed_file is the output file from IMPUTE2
 * hla_file is a file containing HLA typings for individuals in the IMPUTE2 .sample file format: columns should be Family_id, Individual_id, 0,0,2,-9, then hla alleles in 4-digit, using 0 for missing data: `700` to code for 2-digit "07" type and `701` to code for 07:01 2-filed typing. Every individual should have typings for all class 1 and class 2 alleles, ordered in the chromosome order: HLA-A1 HLA-C, HLA-B, HLA-DRB, HLA-DQA, HLA-DQB, HLA-DPA, HLA-DPB. 
-* files/ is the path of the files/ folder of this repo (if you're running the program from this folder, just put "files/")
+* Optional: files/ is the path of the files/ folder of this repo (if you're running the program from this folder, the default value is "files/")
 
 ##Included files
 
