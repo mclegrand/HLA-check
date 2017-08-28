@@ -27,7 +27,7 @@ using namespace std;
 
 
 // ./js --prefix /home/mc/HLA-check/files/ HLA hlafile imputefile  ?
-string prefix = "/home/mc/HLA-check/files/";
+string prefix;  // = "/home/mc/HLA-check/files/";
 string alnfile = "info.txt";
 
 //string prefix = "/home/mc/bin/files/";
@@ -43,6 +43,7 @@ map<string, string> nuc;
 vector<std::string> hlalist;
 vector<std::string> hladef;
 string reftruc;
+string refnuc;
 string nucfilename;
 
 
@@ -76,8 +77,8 @@ inline char invert(char in) {
 
 
 int main(int argc, char** argv) {
-    if(argc<4) {
-        printf("%s A impute2_file hla_file\n", argv[0]);
+    if(argc<5) {
+        printf("%s A impute2_file hla_file ~/HLA-check/files/\n", argv[0]);
         return 1;
     }
 
@@ -94,11 +95,12 @@ int main(int argc, char** argv) {
         printf("HLA must be A,B,C,DRB1,DPA1,DPB1,DQA1, or DQB1\n");
         return 1;
     }
+    prefix = argv[4];
 
     ifstream aln_file;
     aln_file.open(prefix + alnfile);
     if (!aln_file.is_open()) {
-        printf("Could not open alignment file\n");
+        printf("Could not open alignment file at %s\n", (prefix+alnfile).c_str());
         return 1;
     }
     string hla, nm_name, coding_sequence, nm_sequence;
@@ -107,28 +109,28 @@ int main(int argc, char** argv) {
     ifstream nucfile;
     nucfile.open(prefix + nucfilename);
     if (!nucfile.is_open()) {
-        printf("Could not open hla sequences definition\n");
+        printf("Could not open hla sequences definition at %s\n", (prefix + nucfilename).c_str());
         return 1;
     }
 
     ifstream rslist;
     rslist.open(prefix + "rs.txt");
     if (!rslist.is_open()) {
-        printf("Could not open the rs list\n");
+        printf("Could not open the rs list at %s\n", (prefix + "rs.txt").c_str());
         return 1;
     }
 
     ifstream datafile;
     datafile.open(argv[2]);
     if (!datafile.is_open()) {
-        printf("Could not open data file\n");
+        printf("Could not open data file %s\n", argv[2]);
         return 1;
     }
 
     ifstream hlafile;
     hlafile.open(argv[3]);
     if (!hlafile.is_open()) {
-        printf("Could not open hla file\n");
+        printf("Could not open hla file %s\n",argv[3]);
         return 1;
     }
 
@@ -160,7 +162,7 @@ int main(int argc, char** argv) {
         hladef.push_back(b);
         nuc[a]=b;
     }
-    //reftruc = nuc[reference_hla_[chosen_hla]];
+    refnuc = nuc[reftruc];
     string x[13];
     map<string, int> rslist_nuc;
     while ( 1 ) {
@@ -168,6 +170,7 @@ int main(int argc, char** argv) {
             if(!(rslist >> a))goto endlecture;
             x[i]=a;
         }
+            //printf("%s\n",x[0].c_str());//DEBUG
         if(nm_name!=x[4])continue;
         int rspos_nm = stoi(x[7]);
         int rspos_f =0;
@@ -188,7 +191,8 @@ int main(int argc, char** argv) {
         }
         int refpos_nuc2=0;
         for(int i=0;; i++) {
-            if(reftruc[i]=='A' || reftruc[i]=='T' || reftruc[i]=='G' || reftruc[i]=='C' ) {
+          //printf("%d %d %s\n",i,rspos_nuc,reftruc.c_str());//DEBUG
+            if(refnuc[i]=='A' || refnuc[i]=='T' || refnuc[i]=='G' || refnuc[i]=='C' ) {
                 rspos_nuc--;
                 if(rspos_nuc<0) {
                     refpos_nuc2=i;
@@ -196,6 +200,7 @@ int main(int argc, char** argv) {
                 }
             }
         }
+        //printf("%s ok\n",x[0].c_str());//DEBUG
         rslist_nuc[x[0]]=refpos_nuc2;
     }
 endlecture:
@@ -217,9 +222,10 @@ endlecture:
             stringstream x(line);
             x>>a;
             x>>rs;
-            x>>a;
-            x>>a;
-            x>>a;
+    //printf("1111 %s\n",rs.c_str());DEBUG
+            //x>>a;
+            //x>>a;
+            //x>>a;
             x>>a;
             x>>allele1;
             x>>allele2;
@@ -235,9 +241,9 @@ endlecture:
                 x.str(oldlines[0]);
                 x>>a;
                 x>>cur_rs;
-                x>>a;
-                x>>a;
-                x>>a;
+                //x>>a;
+                //x>>a;
+                //x>>a;
                 x>>a;
                 x>>a1;
                 x>>a2;
@@ -255,17 +261,17 @@ endlecture:
                 y.str(oldlines[1]);
                 x>>a;
                 x>>cur_rs;
-                x>>a;
-                x>>a;
-                x>>a;
+                //x>>a;
+                //x>>a;
+                //x>>a;
                 x>>a;
                 x>>a1;
                 x>>a2;
                 y>>a;
                 y>>cur_rs;
-                y>>a;
-                y>>a;
-                y>>a;
+                //y>>a;
+                //y>>a;
+                //y>>a;
                 y>>a;
                 y>>a3;
                 y>>a4;
@@ -286,7 +292,7 @@ endlecture:
                         tmp.push_back(aa*ee/f);
                         tmp.push_back(bb*ee/f);
                         tmp.push_back(ff*aa/f);
-                    } else printf("it happens...\n");
+                    } else printf("wrong triallelic encoding at s %d...\n", rslist_nuc[cur_rs]);
 
 
                 }
@@ -318,7 +324,7 @@ endlecture:
     }
 
     if(data.empty()) {
-        printf("data format fail\n");
+        printf("No SNP found in your data for selected HLA gene: data format failure ?\n");
         return 1;
     }
     numberofnames = data[0].size()/3;
@@ -327,7 +333,7 @@ endlecture:
     omp_set_dynamic(0);
     omp_set_num_threads(8);
 
-    #pragma omp parallel for
+    #pragma omp parallel for 
     for(int i=0; i<numberofnames; i++) {
         float scoremin = -numeric_limits<float>::infinity() ;
         string hla1min="";
@@ -402,11 +408,11 @@ void main_loop(float* scoremin, string& hla1min, string& hla2min, int i,const ve
                 int pos = data_rs_pos[k];
                 char h1 = seq1[pos];
                 if(h1 == '-') {
-                    h1=reftruc[pos];
+                    h1=refnuc[pos];
                 }
                 char h2 = seq2[pos];
                 if(h2 == '-') {
-                    h2=reftruc[pos];
+                    h2=refnuc[pos];
                 }
                 if(h2 == '*' && h1=='*') {
                     continue;
@@ -425,7 +431,7 @@ void main_loop(float* scoremin, string& hla1min, string& hla2min, int i,const ve
                         else if(h1 == allele2) score += (data[k][3*i  ]);//B*
                         else printf("wut2 %s\n",rs.c_str());
                     } else { // pas de *
-                        if((h1==allele1 && h2 == allele2) || (h1==allele2 && h2 == allele1) ) score += (data[k][3*i  ]+data[k][3*i+2]); //AB ou BA
+                        if((h1==allele1 && h2 == allele2) || (h1==allele2 && h2 == allele1) ) score += (data[k][3*i  ]+data[k][3*i+2]);//AB ou BA
                         else if(h1 == allele1 && h2 == allele1)                               score += (data[k][3*i+1]+data[k][3*i+2]);//AA
                         else if(h1 == allele2 && h2 == allele2)                               score += (data[k][3*i  ]+data[k][3*i+1]);//BB
                         else printf("wut3 %c %c %c %c %s \n",h1,h2,allele1,allele2,rs.c_str());
@@ -466,6 +472,7 @@ scoring:
                 //la fonction doit être NÉGATIVE et DÉCROISSANTE SUR [0,1] :
                 //1 = "pas bon du tout"; 0 = "perfect match"
             }
+              //printf("%s %s %f\n",hla1.c_str(),hla2.c_str(),scoretot);DEBUG?
             if(scoretot > *scoremin) {
                 (*scoremin)=scoretot;
                 hla1min=hla1;
