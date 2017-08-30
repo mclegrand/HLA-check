@@ -248,6 +248,7 @@ endlecture:
                 y.str(oldlines[1]);
                 x>>a;
                 x>>cur_rs;
+                //std::cout << oldlines[0] << std::endl << oldlines[1] << std::endl;
                 x>>a;
                 x>>a1;
                 x>>a2;
@@ -256,6 +257,11 @@ endlecture:
                 y>>a;
                 y>>a3;
                 y>>a4;
+                if(a1 != a3 || a2==a4) {
+                    std::cerr << "wrong triallelic encoding at " << cur_rs.c_str() << std::endl;
+                    oldlines.clear();
+                    continue;
+                }
                 data_allele1.push_back(a1);
                 data_allele2.push_back(a2);
                 data_allele3.push_back(a4);
@@ -264,18 +270,14 @@ endlecture:
                 tmp.clear();
                 while(x>>aa>>bb>>cc) {
                     y>>dd>>ee>>ff;
-                    if(a1==a3) {
-                        f = aa*dd+bb*dd+dd*cc+aa*ee+bb*ee+ff*aa;
-                        //AA AB BB AC BC CC
-                        tmp.push_back(aa*dd/f);
-                        tmp.push_back(bb*dd/f);
-                        tmp.push_back(cc*dd/f);
-                        tmp.push_back(aa*ee/f);
-                        tmp.push_back(bb*ee/f);
-                        tmp.push_back(ff*aa/f);
-                    } else printf("wrong triallelic encoding at s %d...\n", rslist_nuc[cur_rs]);
-
-
+                    f = aa*dd+bb*dd+dd*cc+aa*ee+bb*ee+ff*aa;
+                    //AA AB BB AC BC CC
+                    tmp.push_back(aa*dd/f);
+                    tmp.push_back(bb*dd/f);
+                    tmp.push_back(cc*dd/f);
+                    tmp.push_back(aa*ee/f);
+                    tmp.push_back(bb*ee/f);
+                    tmp.push_back(ff*aa/f);
                 }
                 data.push_back(tmp);
 
@@ -290,6 +292,7 @@ endlecture:
         cur_rs = rs;
         oldlines.push_back(line);
     }
+    std::cerr << "#SNPs used:" << data.size() << std::endl;
 
 
 
@@ -443,7 +446,7 @@ void main_loop(float* scoremin, string& hla1min, string& hla2min, int i,const ve
                     }
                 }
 scoring:
-                if(score>1.001 || score<0) printf("wat %f\n",score);
+                if(score>1.001 || score<0) printf("wat %f %s\n",score,data_rs[k].c_str());
 
                 //scoretot += (0.99-(1/(score+0.01)));nope
                 scoretot+=(-score);
